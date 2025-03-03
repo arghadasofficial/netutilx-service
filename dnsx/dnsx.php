@@ -3,7 +3,7 @@ header("Content-Type: application/json");
 
 require_once "dns_functions.php"; // Optimized DNS functions
 
-$type = $_GET['type'] ? null;
+$type = $_GET['type'] ?? null;
 $domain = $_GET['domain'] ?? null;
 $server = $_GET['server'] ?? null;
 $ip = $_GET['ip'] ?? null;
