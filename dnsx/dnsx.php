@@ -5,7 +5,7 @@ require_once "dns_functions.php"; // Optimized DNS functions
 
 $type = $_GET['type'] ?? null;
 $domain = $_GET['domain'] ?? null;
-$server = $_GET['server'] ?? "8.8.8.8"; // Default DNS server
+$server = $_GET['server'] ?? null;
 $ip = $_GET['ip'] ?? null;
 
 // 🔍 Validate the request type
