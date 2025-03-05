@@ -3,45 +3,51 @@ header("Content-Type: application/json");
 
 require_once "dns_functions.php"; // Optimized DNS functions
 
+// 🚀 Ensure the request is GET
+if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
+    http_response_code(405);
+    echo json_encode(["error" => "Only GET requests are allowed"]);
+    exit;
+}
+
+// 🔍 Get parameters
+$action = $_GET['action'] ?? null;
+$query = $_GET['query'] ?? null;
 $type = $_GET['type'] ?? null;
-$domain = $_GET['domain'] ?? null;
 $server = $_GET['server'] ?? null;
-$ip = $_GET['ip'] ?? null;
 
-// 🔍 Validate the request type
-if (!$type) {
-    echo json_encode(["error" => "Query type is required"]);
+// 🔎 Validate 'action' (must be 'ip' or 'domain')
+if (!in_array($action, ['ip', 'domain'], true)) {
     http_response_code(400);
+    echo json_encode(["error" => "Invalid action. Allowed: ip, domain"]);
     exit;
 }
 
-// 🔍 Validate required parameters based on query type
-$requiredParams = match ($type) {
-    "A", "NS", "MX", "SOA", "TXT" => !$domain ? "Domain is required" : null,
-    "PTR" => !$ip ? "IP address is required" : null,
-    default => "Invalid query type"
-};
-
-// 🚨 Return error if required params are missing
-if ($requiredParams) {
-    echo json_encode(["error" => $requiredParams]);
+// 🔎 Validate 'query', 'type', and 'server' in one condition
+if (!$query || !$type || !$server) {
     http_response_code(400);
+    echo json_encode(["error" => "Query, type, and server parameters are required"]);
     exit;
 }
 
-// ✅ Execute DNS Query
+// 🔎 Ensure 'PTR' queries require an IP
+if ($type === "PTR" && $action !== "ip") {
+    http_response_code(400);
+    echo json_encode(["error" => "PTR queries require an IP address"]);
+    exit;
+}
+
+// ✅ Execute DNS Query based on type
 $response = match ($type) {
-    "A"    => aQuery($domain, $server),
-    "NS"   => nsQuery($domain, $server),
-    "MX"   => mxQuery($domain, $server),
-    "SOA"  => soaQuery($domain, $server),
-    "TXT"  => txtQuery($domain, $server),
-    "PTR"  => ptrQuery($ip),
+    "A"    => aQuery($query, $server),
+    "NS"   => nsQuery($query, $server),
+    "MX"   => mxQuery($query, $server),
+    "SOA"  => soaQuery($query, $server),
+    "TXT"  => txtQuery($query, $server),
+    "PTR"  => ptrQuery($query),
+    default => ["error" => "Invalid DNS type"]
 };
 
-// 🟢 Success response
+// 🟢 Return Response
 echo json_encode(["success" => true, "data" => $response]);
-
-// 🚨 Immediately stop execution to prevent further processing
 exit;
-?>
