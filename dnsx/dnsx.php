@@ -48,6 +48,11 @@ $response = match ($type) {
     default => ["error" => "Invalid DNS type"]
 };
 
-// 🟢 Return Response
-echo json_encode(["success" => true, "data" => $response]);
+if($response) {
+    echo json_encode(["success" => true, "data" => $response]);
+    exit;
+}
+
+echo json_encode(["success" => false, "data" => "Service failed to respond"]);
 exit;
+
