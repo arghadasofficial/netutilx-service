@@ -48,7 +48,7 @@ $response = match ($type) {
     default => ["error" => "Invalid DNS type"]
 };
 
-if($response) {
+if(!empty($response)) {
     echo json_encode(["success" => true, "data" => $response]);
     exit;
 }
