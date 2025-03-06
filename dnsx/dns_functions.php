@@ -4,7 +4,7 @@ function executeQuery($command)
 {
     return [
         "query"  => $command,
-        "output" => trim(shell_exec($command))
+        "output" => shell_exec($command)
     ];
 }
 
