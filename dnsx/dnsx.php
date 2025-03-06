@@ -3,70 +3,51 @@ header("Content-Type: application/json");
 
 require_once "dns_functions.php"; // Optimized DNS functions
 
-class DnsApiHandler
-{
-    public function handleRequest()
-    {
-        if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
-            $this->sendErrorResponse(405, "Only GET requests are allowed");
-        }
-
-        // Get and sanitize parameters
-        $action = filter_input(INPUT_GET, 'action', FILTER_SANITIZE_STRING);
-        $query  = filter_input(INPUT_GET, 'query', FILTER_SANITIZE_STRING);
-        $type   = filter_input(INPUT_GET, 'type', FILTER_SANITIZE_STRING);
-        $server = filter_input(INPUT_GET, 'server', FILTER_SANITIZE_STRING);
-
-        // Validate parameters
-        if (!in_array($action, ['ip', 'domain'], true)) {
-            $this->sendErrorResponse(400, "Invalid action. Allowed: ip, domain");
-        }
-
-        if (!$query || !$type || !$server) {
-            $this->sendErrorResponse(400, "Query, type, and server parameters are required");
-        }
-
-        if ($type === "PTR" && $action !== "ip") {
-            $this->sendErrorResponse(400, "PTR queries require an IP address");
-        }
-
-        // Execute DNS Query
-        $response = match ($type) {
-            "A"    => $this->safeDnsQuery('aQuery', $query, $server),
-            "NS"   => $this->safeDnsQuery('nsQuery', $query, $server),
-            "MX"   => $this->safeDnsQuery('mxQuery', $query, $server),
-            "SOA"  => $this->safeDnsQuery('soaQuery', $query, $server),
-            "TXT"  => $this->safeDnsQuery('txtQuery', $query, $server),
-            "PTR"  => $this->safeDnsQuery('ptrQuery', $query),
-            default => $this->sendErrorResponse(400, "Invalid DNS type"),
-        };
-
-        $this->sendSuccessResponse($response);
-    }
-
-    private function safeDnsQuery(string $function, string $query, ?string $server = null)
-    {
-        if (!function_exists($function)) {
-            return ["error" => "Function $function not found"];
-        }
-
-        return $server ? $function($query, $server) : $function($query);
-    }
-
-    private function sendErrorResponse(int $code, string $message)
-    {
-        http_response_code($code);
-        echo json_encode(["error" => $message]);
-        exit;
-    }
-
-    private function sendSuccessResponse($data)
-    {
-        echo json_encode(["success" => true, "data" => $data]);
-        exit;
-    }
+// 🚀 Ensure the request is GET
+if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
+    http_response_code(405);
+    echo json_encode(["error" => "Only GET requests are allowed"]);
+    exit;
 }
 
-// Initialize the handler
-$dnsApi = new DnsApiHandler();
-$dnsApi->handleRequest();
+// 🔍 Get parameters
+$action = $_GET['action'] ?? null;
+$query = $_GET['query'] ?? null;
+$type = $_GET['type'] ?? null;
+$server = $_GET['server'] ?? null;
+
+// 🔎 Validate 'action' (must be 'ip' or 'domain')
+if (!in_array($action, ['ip', 'domain'], true)) {
+    http_response_code(400);
+    echo json_encode(["error" => "Invalid action. Allowed: ip, domain"]);
+    exit;
+}
+
+// 🔎 Validate 'query', 'type', and 'server' in one condition
+if (!$query || !$type || !$server) {
+    http_response_code(400);
+    echo json_encode(["error" => "Query, type, and server parameters are required"]);
+    exit;
+}
+
+// 🔎 Ensure 'PTR' queries require an IP
+if ($type === "PTR" && $action !== "ip") {
+    http_response_code(400);
+    echo json_encode(["error" => "PTR queries require an IP address"]);
+    exit;
+}
+
+// ✅ Execute DNS Query based on type
+$response = match ($type) {
+    "A"    => aQuery($query, $server),
+    "NS"   => nsQuery($query, $server),
+    "MX"   => mxQuery($query, $server),
+    "SOA"  => soaQuery($query, $server),
+    "TXT"  => txtQuery($query, $server),
+    "PTR"  => ptrQuery($query),
+    default => ["error" => "Invalid DNS type"]
+};
+
+// 🟢 Return Response
+echo json_encode(["success" => true, "data" => $response]);
+exit;
