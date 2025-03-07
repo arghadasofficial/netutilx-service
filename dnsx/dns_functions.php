@@ -3,11 +3,18 @@
 function executeQuery($command)
 {
     $escapedCommand = escapeshellcmd($command);
-    $output = shell_exec("timeout 2 $escapedCommand 2>&1"); // Prevent long-running queries
+    $output = shell_exec("timeout 2 $escapedCommand 2>&1");
+
+    if ($output === null) {
+        return [
+            "query"  => $command,
+            "output" => "Command execution failed or timed out."
+        ];
+    }
 
     return [
         "query"  => $command,
-        "output" => trim($output) ?: "No response received."
+        "output" => trim((string)$output) ?: "No response received."
     ];
 }
 
