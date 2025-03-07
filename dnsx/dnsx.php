@@ -59,5 +59,8 @@ if (!$response || !$response['success']) {
 }
 
 // ✅ Return successful response
-echo json_encode(["success" => true, "data" => $response['output']]);
+echo json_encode(["success" => true, "data" => [
+    "query"  => $response['query'],
+    "output" => $response['output']
+]]);
 exit;
