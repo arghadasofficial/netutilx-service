@@ -2,9 +2,12 @@
 
 function executeQuery($command)
 {
+    $escapedCommand = escapeshellcmd($command);
+    $output = shell_exec("timeout 2 $escapedCommand 2>&1"); // Prevent long-running queries
+
     return [
         "query"  => $command,
-        "output" => shell_exec($command)
+        "output" => trim($output) ?: "No response received."
     ];
 }
 

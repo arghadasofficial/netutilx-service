@@ -55,4 +55,3 @@ if(!empty($response)) {
 
 echo json_encode(["success" => false, "data" => "Service failed to respond"]);
 exit;
-
