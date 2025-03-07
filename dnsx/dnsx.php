@@ -6,7 +6,7 @@ require_once "dns_functions.php"; // Optimized DNS functions
 // 🚀 Ensure the request is GET
 if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     http_response_code(405);
-    echo json_encode(["error" => "Only GET requests are allowed"]);
+    echo json_encode(["success" => false, "error" => "Only GET requests are allowed"]);
     exit;
 }
 
@@ -19,21 +19,21 @@ $server = $_GET['server'] ?? null;
 // 🔎 Validate 'action' (must be 'ip' or 'domain')
 if (!in_array($action, ['ip', 'domain'], true)) {
     http_response_code(400);
-    echo json_encode(["error" => "Invalid action. Allowed: ip, domain"]);
+    echo json_encode(["success" => false, "error" => "Invalid action. Allowed: ip, domain"]);
     exit;
 }
 
 // 🔎 Validate 'query', 'type', and 'server' in one condition
 if (!$query || !$type || !$server) {
     http_response_code(400);
-    echo json_encode(["error" => "Query, type, and server parameters are required"]);
+    echo json_encode(["success" => false, "error" => "Query, type, and server parameters are required"]);
     exit;
 }
 
 // 🔎 Ensure 'PTR' queries require an IP
 if ($type === "PTR" && $action !== "ip") {
     http_response_code(400);
-    echo json_encode(["error" => "PTR queries require an IP address"]);
+    echo json_encode(["success" => false, "error" => "PTR queries require an IP address"]);
     exit;
 }
 
@@ -45,13 +45,19 @@ $response = match ($type) {
     "SOA"  => soaQuery($query, $server),
     "TXT"  => txtQuery($query, $server),
     "PTR"  => ptrQuery($query),
-    default => ["error" => "Invalid DNS type"]
+    default => null
 };
 
-if(!empty($response)) {
-    echo json_encode(["success" => true, "data" => $response]);
+// 🚨 Check the success status dynamically
+if (!$response || !$response['success']) {
+    echo json_encode([
+        "success" => false,
+        "error"   => "DNS query failed or no response received",
+        "query"   => $response['query'] ?? $query
+    ]);
     exit;
 }
 
-echo json_encode(["success" => false, "data" => "Service failed to respond"]);
+// ✅ Return successful response
+echo json_encode(["success" => true, "data" => $response]);
 exit;

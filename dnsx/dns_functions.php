@@ -7,14 +7,18 @@ function executeQuery($command)
 
     if ($output === null) {
         return [
-            "query"  => $command,
-            "output" => "Command execution failed or timed out."
+            "success" => false,
+            "query"   => $command,
+            "output"  => "Command execution failed or timed out."
         ];
     }
 
+    $trimmedOutput = trim((string)$output);
+    
     return [
-        "query"  => $command,
-        "output" => trim((string)$output) ?: "No response received."
+        "success" => !empty($trimmedOutput) && !str_contains($trimmedOutput, "SERVFAIL"),
+        "query"   => $command,
+        "output"  => $trimmedOutput ?: "No response received."
     ];
 }
 
