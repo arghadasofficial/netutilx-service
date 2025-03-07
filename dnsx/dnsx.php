@@ -53,14 +53,12 @@ if (!$response || !$response['success']) {
     echo json_encode([
         "success" => false,
         "error"   => "DNS query failed or no response received",
-        "query"   => $response['query'] ?? $query
     ]);
     exit;
 }
 
 // ✅ Return successful response
 echo json_encode(["success" => true, "data" => [
-    "query" => $response['query'],
     "output" => $response['output']
 ]]);
 exit;
