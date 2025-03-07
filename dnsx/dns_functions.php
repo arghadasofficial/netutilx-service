@@ -19,7 +19,7 @@ function executeQuery($command)
         "success" => !empty($trimmedOutput) && !str_contains($trimmedOutput, "SERVFAIL"),
         "query"   => $command,
         "output"  => $trimmedOutput ?: "No response received."
-    ];
+    ];  
 }
 
 function aQuery($domain, $server)
