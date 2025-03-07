@@ -14,7 +14,7 @@ function executeQuery($command)
     }
 
     $trimmedOutput = trim((string)$output);
-    
+
     return [
         "success" => !empty($trimmedOutput) && !str_contains($trimmedOutput, "SERVFAIL"),
         "query"   => $command,
@@ -51,5 +51,3 @@ function ptrQuery($ip)
 {
     return executeQuery("dig -x $ip +noall +answer");
 }
-
-?>
