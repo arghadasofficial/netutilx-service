@@ -9,7 +9,12 @@ Netutilx Service is a core component of the **Netutilx Project**, powering netwo
 - Built with a modular approach for maintainability and scalability.
 
 ## License
-This project is licensed under the **Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0) License**. Commercial use is strictly prohibited.
+This project is licensed under the **GNU General Public License v3.0 (GPL-3.0)**. See the `LICENSE` file for more details.
 
 ## Contact
-For queries, reach out via [email@example.com](mailto:arghadasofficial@gmail.com).
+For queries, reach out via [arghadasofficial@gmail.com](mailto:arghadasofficial@gmail.com).
+
+## Download the Android App | Visit Website
+- **Android App:** [Download Here](#)
+- **Website:** [Visit Here](#)
+
