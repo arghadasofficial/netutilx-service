@@ -15,6 +15,6 @@ This project is licensed under the **GNU General Public License v3.0 (GPL-3.0)**
 For queries, reach out via [arghadasofficial@gmail.com](mailto:arghadasofficial@gmail.com).
 
 ## Download the Android App | Visit Website
-- **Android App:** [Download Here](#)
-- **Website:** [Visit Here](#)
+[![Download Netutilx](https://img.shields.io/badge/Download-Android%20App-blue?style=for-the-badge&logo=android)](#)  
 
+[![Visit Website](https://img.shields.io/badge/Visit-Netutilx%20Website-orange?style=for-the-badge&logo=google-chrome)](#)
