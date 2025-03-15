@@ -41,62 +41,11 @@ function runTraceroute($host, $protocol = 'icmp', $maxHops = 30, $queries = 3, $
     }
 
     // Parse the traceroute output
-    return $output;
-}
-
-/**
- * Parses the traceroute output into a structured format.
- *
- * @param string $output The raw output of the traceroute command.
- * @return array The parsed traceroute data.
- */
-function parseTracerouteResponse($output) {
-    $lines = array_values(array_filter(explode("\n", trim($output))));
-    $result = [];
-
-    // Extract the header (example: "traceroute to google.com (142.250.182.206), 30 hops max, 60 byte packets")
-    $header = array_shift($lines);
-    if (preg_match('/traceroute to (\S+) \((\d+\.\d+\.\d+\.\d+)\)/', $header, $matches)) {
-        $result['destination'] = [
-            'hostname' => $matches[1],
-            'ip'       => $matches[2],
-        ];
-    }
-
-    $result['hops'] = [];
-
-    // Process each hop line
-    foreach ($lines as $line) {
-        $line = trim($line);
-        if (empty($line)) continue;
-
-        // Example hop line:
-        // "1  192.168.1.1  1.234 ms  1.321 ms  1.412 ms"
-        // "2  * * *"
-        if (preg_match('/^(\d+)\s+(\S+)?\s+\((\d+\.\d+\.\d+\.\d+)\)?\s+([\d\.]+) ms\s+([\d\.]+) ms\s+([\d\.]+) ms/', $line, $matches)) {
-            $result['hops'][] = [
-                'hop'       => (int)$matches[1],
-                'hostname'  => $matches[2] ?: 'Unknown',
-                'ip'        => $matches[3],
-                'latency'   => [
-                    'first'  => (float)$matches[4],
-                    'second' => (float)$matches[5],
-                    'third'  => (float)$matches[6],
-                ],
-            ];
-        }
-        // Handle "request timeout" or missing hops (e.g., "* * *")
-        elseif (preg_match('/^(\d+)\s+\*\s+\*\s+\*/', $line, $matches)) {
-            $result['hops'][] = [
-                'hop'       => (int)$matches[1],
-                'hostname'  => 'Request timed out',
-                'ip'        => 'N/A',
-                'latency'   => null,
-            ];
-        }
-    }
-
-    return $result;
+    return [
+        'success' => true,
+        'command' => $command,
+        'output'  => $output
+    ];
 }
 
 // --- Process GET Request ---
