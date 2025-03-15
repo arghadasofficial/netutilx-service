@@ -41,7 +41,7 @@ function runTraceroute($host, $protocol = 'icmp', $maxHops = 30, $queries = 3, $
     }
 
     // Parse the traceroute output
-    return parseTracerouteResponse($output);
+    return $output;
 }
 
 /**
