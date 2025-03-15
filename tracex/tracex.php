@@ -36,7 +36,9 @@ function runTraceroute($host, $protocol = 'icmp', $maxHops = 30, $queries = 3, $
 
     return [
         'success' => true,
-        'output' => $output
+        'data' => [
+            'output' => $output
+        ]
     ];
 }
 
