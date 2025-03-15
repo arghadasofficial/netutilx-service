@@ -34,35 +34,10 @@ function runTraceroute($host, $protocol = 'icmp', $maxHops = 30, $queries = 3, $
         return ['success' => false, 'error' => 'Traceroute failed.', 'command' => $command];
     }
 
-    return parseTracerouteResponse($output);
-}
-
-/**
- * Parses the traceroute output into structured data.
- */
-function parseTracerouteResponse($output) {
-    $lines = array_values(array_filter(explode("\n", trim($output))));
-    $result = ['hops' => []];
-
-    if (preg_match('/traceroute to (\S+) \((\d+\.\d+\.\d+\.\d+)\)/', $lines[0], $matches)) {
-        $result['destination'] = ['hostname' => $matches[1], 'ip' => $matches[2]];
-    }
-    array_shift($lines); 
-
-    foreach ($lines as $line) {
-        if (preg_match('/^(\d+)\s+(\S+)?\s+\((\d+\.\d+\.\d+\.\d+)\)?\s+([\d\.]+) ms\s+([\d\.]+) ms\s+([\d\.]+) ms/', $line, $matches)) {
-            $result['hops'][] = [
-                'hop' => (int)$matches[1],
-                'hostname' => $matches[2] ?: 'Unknown',
-                'ip' => $matches[3],
-                'latency' => ['first' => (float)$matches[4], 'second' => (float)$matches[5], 'third' => (float)$matches[6]],
-            ];
-        } elseif (preg_match('/^(\d+)\s+\*\s+\*\s+\*/', $line, $matches)) {
-            $result['hops'][] = ['hop' => (int)$matches[1], 'hostname' => 'Request timed out', 'ip' => 'N/A', 'latency' => null];
-        }
-    }
-
-    return $result;
+    return [
+        'success' => true,
+        'output' => $output
+    ]
 }
 
 // --- Handle GET Request ---
